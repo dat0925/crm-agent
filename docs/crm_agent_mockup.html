@@ -163,9 +163,42 @@
   .meta-row span:last-child{font-weight:700;}
 
   .footnote{font-size:11.5px;color:var(--muted);margin-top:18px;line-height:1.7;}
+
+  /* ===== PIN gate ===== */
+  #pin-gate{
+    position:fixed;inset:0;background:var(--navy);
+    display:flex;align-items:center;justify-content:center;z-index:999;
+  }
+  .pin-card{
+    background:#fff;border-radius:16px;padding:32px 30px;width:280px;text-align:center;
+    box-shadow:0 18px 40px rgba(0,0,0,.25);
+  }
+  .pin-card .brand-mark{margin:0 auto 14px;}
+  .pin-card h2{font-size:14px;color:var(--navy);margin:0 0 16px;font-weight:700;}
+  .pin-card input{
+    width:100%;text-align:center;font-size:20px;letter-spacing:8px;
+    padding:10px 8px;border:1px solid var(--line);border-radius:10px;margin-bottom:12px;
+  }
+  .pin-card button{
+    width:100%;padding:10px;border:none;border-radius:10px;background:var(--navy);
+    color:#fff;font-weight:700;font-size:13px;cursor:pointer;
+  }
+  .pin-error{font-size:11.5px;color:var(--red);min-height:16px;margin:0 0 6px;}
+  body.locked .wrap{display:none;}
 </style>
 </head>
-<body>
+<body class="locked">
+
+<div id="pin-gate">
+  <div class="pin-card">
+    <div class="brand-mark"></div>
+    <h2>PINコードを入力してください</h2>
+    <input id="pin-input" type="password" inputmode="numeric" maxlength="4" autofocus>
+    <p class="pin-error" id="pin-error">&nbsp;</p>
+    <button onclick="checkPin()">表示する</button>
+  </div>
+</div>
+
 <div class="wrap">
 
   <div class="topbar">
@@ -382,6 +415,29 @@
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     event.target.classList.add('active');
   }
+
+  var PIN = "2759";
+  function checkPin(){
+    var val = document.getElementById('pin-input').value;
+    if(val === PIN){
+      document.body.classList.remove('locked');
+      document.getElementById('pin-gate').remove();
+      try{ sessionStorage.setItem('crmMockUnlocked','1'); }catch(e){}
+    } else {
+      document.getElementById('pin-error').textContent = 'PINコードが正しくありません';
+      document.getElementById('pin-input').value = '';
+    }
+  }
+  document.getElementById('pin-input').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ checkPin(); }
+  });
+  try{
+    if(sessionStorage.getItem('crmMockUnlocked') === '1'){
+      document.body.classList.remove('locked');
+      var gate = document.getElementById('pin-gate');
+      if(gate) gate.remove();
+    }
+  }catch(e){}
 </script>
 </body>
 </html>
