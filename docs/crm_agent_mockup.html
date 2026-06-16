@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>AIエージェントCRM君（仮称）モックアップ</title>
+<style>
+  :root{
+    --navy:#142C54;
+    --brand-blue:#2F7FE0;
+    --brand-sky:#6FCBEA;
+    --bg:#F4F7FB;
+    --card:#FFFFFF;
+    --line:#E4E9F0;
+    --text:#1B2430;
+    --muted:#697485;
+    --green:#1F9D6B;
+    --green-bg:#E7F6EF;
+    --amber:#C77B12;
+    --amber-bg:#FBF1E1;
+    --red:#D6473D;
+    --red-bg:#FBEAE8;
+    --slate-bg:#EEF1F5;
+    --line-green:#06C755;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+    color:var(--text);
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 24px 64px;}
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(135deg,var(--brand-blue),var(--brand-sky));
+  }
+  .brand-text{font-weight:700;font-size:15px;color:var(--navy);letter-spacing:.02em;}
+  .brand-sub{font-size:11px;color:var(--muted);}
+
+  .tabs{display:flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px;}
+  .tab{
+    padding:8px 18px;border-radius:999px;font-size:13px;font-weight:600;
+    color:var(--muted);cursor:pointer;border:none;background:transparent;
+    transition:.15s;
+  }
+  .tab.active{background:var(--navy);color:#fff;}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  h1.page-title{font-size:18px;font-weight:700;color:var(--navy);margin:0 0 4px;}
+  p.page-desc{font-size:13px;color:var(--muted);margin:0 0 22px;}
+
+  /* ===== SCREEN 1: LINE flow ===== */
+  .flow-grid{display:grid;grid-template-columns:300px 1fr;gap:40px;align-items:start;}
+
+  .phone{
+    width:300px;border-radius:34px;background:#0c0c0c;padding:10px;
+    box-shadow:0 18px 40px rgba(20,40,80,.18);
+  }
+  .phone-screen{
+    background:#EDEDED;border-radius:24px;overflow:hidden;height:560px;
+    display:flex;flex-direction:column;
+  }
+  .line-header{
+    background:var(--line-green);color:#fff;padding:14px 16px 12px;
+    display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;
+  }
+  .line-avatar{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.35);}
+  .chat-body{flex:1;padding:14px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+  .msg-row{display:flex;}
+  .msg-row.bot{justify-content:flex-start;}
+  .msg-row.user{justify-content:flex-end;}
+  .bubble{
+    max-width:78%;padding:9px 12px;border-radius:14px;font-size:12.5px;line-height:1.6;
+  }
+  .bubble.bot{background:#fff;border:1px solid #E1E1E1;border-bottom-left-radius:4px;}
+  .bubble.user{background:var(--line-green);color:#fff;border-bottom-right-radius:4px;}
+  .quick-replies{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 6px;}
+  .qr-pill{
+    border:1px solid var(--brand-blue);color:var(--brand-blue);background:#fff;
+    border-radius:999px;padding:6px 12px;font-size:11.5px;font-weight:600;
+  }
+  .qr-pill.picked{background:var(--brand-blue);color:#fff;}
+  .timestamp{font-size:10px;color:#9aa3af;text-align:center;margin:4px 0;}
+
+  .annotations{display:flex;flex-direction:column;gap:14px;}
+  .anno{
+    display:flex;gap:14px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:16px 18px;
+  }
+  .anno-num{
+    flex:0 0 28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+  }
+  .anno-title{font-size:13.5px;font-weight:700;color:var(--navy);margin:0 0 4px;}
+  .anno-body{font-size:12.5px;color:var(--muted);line-height:1.6;margin:0;}
+  .anno-tag{
+    display:inline-block;margin-top:6px;font-size:10.5px;font-weight:700;
+    padding:2px 8px;border-radius:6px;
+  }
+  .anno-tag.branch{background:var(--amber-bg);color:var(--amber);}
+  .anno-tag.handoff{background:var(--green-bg);color:var(--green);}
+  .anno-tag.system{background:var(--slate-bg);color:var(--muted);}
+
+  /* ===== SCREEN 2: dashboard ===== */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+  .kpi-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+  .kpi-label{font-size:11.5px;color:var(--muted);margin:0 0 6px;}
+  .kpi-value{font-size:24px;font-weight:700;color:var(--navy);}
+  .kpi-value span{font-size:13px;color:var(--muted);font-weight:600;margin-left:4px;}
+  .kpi-value.alert{color:var(--red);}
+
+  .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .filters{display:flex;gap:6px;}
+  .filter-chip{
+    font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:999px;
+    border:1px solid var(--line);color:var(--muted);background:#fff;cursor:default;
+  }
+  .filter-chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .btn-send{
+    font-size:12px;font-weight:700;color:#fff;background:var(--brand-blue);
+    border:none;border-radius:8px;padding:8px 14px;cursor:default;
+  }
+
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  thead th{
+    text-align:left;font-size:11.5px;color:var(--muted);font-weight:700;
+    padding:12px 14px;border-bottom:1px solid var(--line);background:#FAFBFD;
+  }
+  tbody td{padding:13px 14px;font-size:12.5px;border-bottom:1px solid var(--line);}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr{cursor:default;}
+  tbody tr.selected{background:#F2F7FD;}
+  .cust-name{font-weight:700;color:var(--text);}
+  .cust-sub{font-size:11px;color:var(--muted);}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;}
+  .badge.wait{background:#EAF1FC;color:var(--brand-blue);}
+  .badge.remind{background:var(--amber-bg);color:var(--amber);}
+  .badge.done{background:var(--green-bg);color:var(--green);}
+  .badge.skip{background:var(--slate-bg);color:var(--muted);}
+  .badge.carry{background:#E9F7FB;color:#1A8FB0;}
+  .badge.followup{background:var(--red-bg);color:var(--red);}
+  .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+  .drawer{
+    margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;display:flex;gap:24px;
+  }
+  .drawer-head{font-size:13px;font-weight:700;color:var(--navy);margin:0 0 10px;}
+  .drawer-col{flex:1;}
+  .log-line{font-size:12px;color:var(--muted);margin:0 0 8px;line-height:1.6;}
+  .log-line b{color:var(--text);}
+  .meta-row{display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid var(--line);}
+  .meta-row span:first-child{color:var(--muted);}
+  .meta-row span:last-child{font-weight:700;}
+
+  .footnote{font-size:11.5px;color:var(--muted);margin-top:18px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="brand-text">サイトマイスター ｜ AIエージェントCRM君（仮称）</div>
+        <div class="brand-sub">月2回プラン標準搭載機能 — 仕様確認用モックアップ</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="showPanel('flow')">LINE会話フロー</button>
+      <button class="tab" onclick="showPanel('dash')">管理画面（CRM管理）</button>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 1 ============ -->
+  <div class="panel active" id="panel-flow">
+    <h1 class="page-title">顧客が実際に受け取る会話の流れ</h1>
+    <p class="page-desc">月2回プランの巡回サイクルごとに、AIが自動で伺いメッセージを送信。回答に応じて既存の更新依頼フローへそのまま引き継ぐ。</p>
+
+    <div class="flow-grid">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="line-header">
+            <div class="line-avatar"></div>
+            サイトマイスター サポート
+          </div>
+          <div class="chat-body">
+            <div class="timestamp">6月16日（火）10:00</div>
+
+            <div class="msg-row bot">
+              <div class="bubble bot">いつもサイトマイスターをご利用いただきありがとうございます😊<br>今月の更新タイミングです。サイトで変更・追加したい内容はございますか？</div>
+            </div>
+
+            <div class="quick-replies">
+              <span class="qr-pill picked">更新依頼したい</span>
+              <span class="qr-pill">今回はおまかせで大丈夫</span>
+              <span class="qr-pill">来月に回したい</span>
+            </div>
+
+            <div class="msg-row user">
+              <div class="bubble user">更新依頼したい</div>
+            </div>
+
+            <div class="msg-row bot">
+              <div class="bubble bot">承知しました！どちらのページのどの部分を変更されたいか、教えてください。（写真の送付もOKです）</div>
+            </div>
+
+            <div class="msg-row user">
+              <div class="bubble user">トップページの営業時間を変更したいです</div>
+            </div>
+
+            <div class="msg-row bot">
+              <div class="bubble bot">ありがとうございます。内容を確認のうえ、修正案をこちらでご用意します。完成しましたら確認用リンクをお送りします📩</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="annotations">
+        <div class="anno">
+          <div class="anno-num">1</div>
+          <div>
+            <p class="anno-title">巡回トリガー（自動・日次）</p>
+            <p class="anno-body">契約開始日を起点に約15日ごと（月2回プラン＝月内2サイクル）で、対象顧客を日次バッチが抽出し自動送信する。当該サイクルで既に依頼済みの顧客はスキップ。</p>
+            <span class="anno-tag system">crm-checkin-scheduler</span>
+          </div>
+        </div>
+        <div class="anno">
+          <div class="anno-num">2</div>
+          <div>
+            <p class="anno-title">伺いメッセージ ＋ Quick Reply</p>
+            <p class="anno-body">「更新依頼したい／今回はおまかせで大丈夫／来月に回したい」の3択。自然言語解析を使わずpostbackで判定するため実装コストが低い。</p>
+            <span class="anno-tag branch">3分岐</span>
+          </div>
+        </div>
+        <div class="anno">
+          <div class="anno-num">3</div>
+          <div>
+            <p class="anno-title">既存フローへハンドオフ</p>
+            <p class="anno-body">「更新依頼したい」が選ばれた時点で、既存LINE更新依頼エージェントのヒアリングフローへそのまま遷移。新規開発はこのハンドオフ部分のみで、ヒアリング〜修正〜公開のコア処理は再利用する。</p>
+            <span class="anno-tag handoff">ticket作成・source=crm_checkin</span>
+          </div>
+        </div>
+        <div class="anno">
+          <div class="anno-num">4</div>
+          <div>
+            <p class="anno-title">未応答時のフォロー</p>
+            <p class="anno-body">3日間無応答の場合は1回だけリマインドを送信。それでも応答がない場合は「未応答」としてクローズし、社内CSへ要フォロー通知を発行する（完全自動ではなく人とAIの併用設計）。</p>
+            <span class="anno-tag system">crm-checkin-reminder</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 2 ============ -->
+  <div class="panel" id="panel-dash">
+    <h1 class="page-title">CRM管理ダッシュボード（社内運用画面）</h1>
+    <p class="page-desc">巡回状況を顧客単位で一覧管理。要フォロー顧客の検知や、個別の手動再送が行える。</p>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <p class="kpi-label">本日の送信対象</p>
+        <div class="kpi-value">42<span>件</span></div>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">今月の応答率</p>
+        <div class="kpi-value">78<span>%</span></div>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">今月の依頼化率</p>
+        <div class="kpi-value">46<span>%</span></div>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">要フォロー件数</p>
+        <div class="kpi-value alert">5<span>件</span></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="filters">
+        <span class="filter-chip active">すべて</span>
+        <span class="filter-chip">応答待ち</span>
+        <span class="filter-chip">依頼化</span>
+        <span class="filter-chip">利用なし</span>
+        <span class="filter-chip">要フォロー</span>
+      </div>
+      <button class="btn-send">選択した顧客に再送する</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>顧客</th><th>プラン</th><th>直近巡回日</th><th>ステータス</th><th>直近の回答</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="selected">
+          <td><div class="cust-name">Bar Aotetsu 様</div><div class="cust-sub">飲食業</div></td>
+          <td>月2回プラン</td>
+          <td>6/16</td>
+          <td><span class="badge done"><span class="dot"></span>依頼化</span></td>
+          <td>トップページの営業時間を変更したい</td>
+        </tr>
+        <tr>
+          <td><div class="cust-name">寿建装 様</div><div class="cust-sub">建設業</div></td>
+          <td>月2回プラン</td>
+          <td>6/16</td>
+          <td><span class="badge wait"><span class="dot"></span>応答待ち</span></td>
+          <td>―</td>
+        </tr>
+        <tr>
+          <td><div class="cust-name">ethan nail 様</div><div class="cust-sub">美容業</div></td>
+          <td>月2回プラン</td>
+          <td>6/15</td>
+          <td><span class="badge skip"><span class="dot"></span>利用なし</span></td>
+          <td>今回はおまかせで大丈夫</td>
+        </tr>
+        <tr>
+          <td><div class="cust-name">harb la nature 様</div><div class="cust-sub">美容業</div></td>
+          <td>月2回プラン</td>
+          <td>6/15</td>
+          <td><span class="badge carry"><span class="dot"></span>来月へ繰越</span></td>
+          <td>来月に回したい</td>
+        </tr>
+        <tr>
+          <td><div class="cust-name">repos_lien 様</div><div class="cust-sub">リラクサロン</div></td>
+          <td>月2回プラン</td>
+          <td>6/13</td>
+          <td><span class="badge remind"><span class="dot"></span>リマインド送信済み</span></td>
+          <td>―（3日間無応答）</td>
+        </tr>
+        <tr>
+          <td><div class="cust-name">寺脇学習塾 様</div><div class="cust-sub">教育・学習支援業</div></td>
+          <td>月2回プラン</td>
+          <td>6/10</td>
+          <td><span class="badge followup"><span class="dot"></span>要フォロー</span></td>
+          <td>2サイクル連続無応答</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="drawer">
+      <div class="drawer-col" style="flex:0 0 220px;">
+        <p class="drawer-head">Bar Aotetsu 様</p>
+        <div class="meta-row"><span>プラン</span><span>月2回プラン</span></div>
+        <div class="meta-row"><span>LINE連携</span><span>連携済み</span></div>
+        <div class="meta-row"><span>サイクル</span><span>2026/06 第2回</span></div>
+        <div class="meta-row"><span>チケットID</span><span>#TCK-10432</span></div>
+        <div class="meta-row"><span>発生元</span><span>CRM自動巡回</span></div>
+      </div>
+      <div class="drawer-col">
+        <p class="drawer-head">会話ログ</p>
+        <p class="log-line"><b>10:00 Bot</b> ｜ 今月の更新タイミングです。サイトで変更・追加したい内容はございますか？</p>
+        <p class="log-line"><b>10:03 顧客</b> ｜ 更新依頼したい</p>
+        <p class="log-line"><b>10:03 Bot</b> ｜ どちらのページのどの部分を変更されたいか、教えてください</p>
+        <p class="log-line"><b>10:05 顧客</b> ｜ トップページの営業時間を変更したいです</p>
+        <p class="log-line"><b>10:05 Bot</b> ｜ 内容を確認のうえ、修正案をご用意します</p>
+      </div>
+    </div>
+
+    <p class="footnote">※ 本画面はモックアップです。表示データはサンプルです。実装時は既存の更新依頼チケット管理画面に「CRM管理」タブとして追加する想定です。</p>
+  </div>
+
+</div>
+
+<script>
+  function showPanel(name){
+    document.getElementById('panel-flow').classList.toggle('active', name==='flow');
+    document.getElementById('panel-dash').classList.toggle('active', name==='dash');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+</script>
+</body>
+</html>
