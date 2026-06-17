@@ -152,13 +152,19 @@
   .filters{display:flex;gap:6px;}
   .filter-chip{
     font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:999px;
-    border:1px solid var(--line);color:var(--muted);background:#fff;cursor:default;
+    border:1px solid var(--line);color:var(--muted);background:#fff;cursor:pointer;
+    transition:.15s;
   }
+  .filter-chip:hover{background:#F2F5F9;}
   .filter-chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .filter-chip.active:hover{background:var(--navy);}
+  .filter-count{font-size:11px;color:var(--muted);margin-left:8px;}
   .btn-send{
     font-size:12px;font-weight:700;color:#fff;background:var(--brand-blue);
-    border:none;border-radius:8px;padding:8px 14px;cursor:default;
+    border:none;border-radius:8px;padding:8px 14px;cursor:pointer;transition:.15s;
   }
+  .btn-send:hover{filter:brightness(.95);}
+  .btn-send:active{transform:translateY(1px);}
 
   table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
   thead th{
@@ -167,8 +173,19 @@
   }
   tbody td{padding:13px 14px;font-size:12.5px;border-bottom:1px solid var(--line);}
   tbody tr:last-child td{border-bottom:none;}
-  tbody tr{cursor:default;}
+  tbody tr{cursor:pointer;transition:background .12s;}
+  tbody tr:hover{background:#F7FAFD;}
   tbody tr.selected{background:#F2F7FD;}
+  tbody tr.selected:hover{background:#EBF3FC;}
+
+  /* ===== toast ===== */
+  #toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(16px);
+    background:var(--navy);color:#fff;font-size:12.5px;font-weight:600;
+    padding:11px 18px;border-radius:10px;box-shadow:0 10px 28px rgba(20,40,80,.28);
+    opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:500;
+  }
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   .cust-name{font-weight:700;color:var(--text);}
   .cust-sub{font-size:11px;color:var(--muted);}
 
@@ -330,13 +347,14 @@
 
     <div class="toolbar">
       <div class="filters">
-        <span class="filter-chip active">すべて</span>
-        <span class="filter-chip">応答待ち</span>
-        <span class="filter-chip">依頼化</span>
-        <span class="filter-chip">利用なし</span>
-        <span class="filter-chip">要フォロー</span>
+        <span class="filter-chip active" data-filter="all" onclick="applyFilter(this)">すべて</span>
+        <span class="filter-chip" data-filter="wait" onclick="applyFilter(this)">応答待ち</span>
+        <span class="filter-chip" data-filter="done" onclick="applyFilter(this)">依頼化</span>
+        <span class="filter-chip" data-filter="skip" onclick="applyFilter(this)">利用なし</span>
+        <span class="filter-chip" data-filter="followup" onclick="applyFilter(this)">要フォロー</span>
+        <span class="filter-count" id="filterCount"></span>
       </div>
-      <button class="btn-send">選択した顧客に再送する</button>
+      <button class="btn-send" onclick="resendSelected()">選択した顧客に再送する</button>
     </div>
 
     <table>
@@ -346,42 +364,42 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="selected">
+        <tr class="selected" data-cust="aotetsu" data-status="done" onclick="selectRow('aotetsu')">
           <td><div class="cust-name">Bar Aotetsu 様</div><div class="cust-sub">飲食業</div></td>
           <td>月2回プラン</td>
           <td>6/16</td>
           <td><span class="badge done"><span class="dot"></span>依頼化</span></td>
           <td>トップページの営業時間を変更したい</td>
         </tr>
-        <tr>
+        <tr data-cust="kotobuki" data-status="wait" onclick="selectRow('kotobuki')">
           <td><div class="cust-name">寿建装 様</div><div class="cust-sub">建設業</div></td>
           <td>月2回プラン</td>
           <td>6/16</td>
           <td><span class="badge wait"><span class="dot"></span>応答待ち</span></td>
           <td>―</td>
         </tr>
-        <tr>
+        <tr data-cust="ethan" data-status="skip" onclick="selectRow('ethan')">
           <td><div class="cust-name">ethan nail 様</div><div class="cust-sub">美容業</div></td>
           <td>月2回プラン</td>
           <td>6/15</td>
           <td><span class="badge skip"><span class="dot"></span>利用なし</span></td>
           <td>今回はおまかせで大丈夫</td>
         </tr>
-        <tr>
+        <tr data-cust="harb" data-status="carry" onclick="selectRow('harb')">
           <td><div class="cust-name">harb la nature 様</div><div class="cust-sub">美容業</div></td>
           <td>月2回プラン</td>
           <td>6/15</td>
           <td><span class="badge carry"><span class="dot"></span>来月へ繰越</span></td>
           <td>来月に回したい</td>
         </tr>
-        <tr>
+        <tr data-cust="repos" data-status="remind" onclick="selectRow('repos')">
           <td><div class="cust-name">repos_lien 様</div><div class="cust-sub">リラクサロン</div></td>
           <td>月2回プラン</td>
           <td>6/13</td>
           <td><span class="badge remind"><span class="dot"></span>リマインド送信済み</span></td>
           <td>―（3日間無応答）</td>
         </tr>
-        <tr>
+        <tr data-cust="terawaki" data-status="followup" onclick="selectRow('terawaki')">
           <td><div class="cust-name">寺脇学習塾 様</div><div class="cust-sub">教育・学習支援業</div></td>
           <td>月2回プラン</td>
           <td>6/10</td>
@@ -393,22 +411,16 @@
 
     <div class="drawer">
       <div class="drawer-col" style="flex:0 0 220px;">
-        <p class="drawer-head">Bar Aotetsu 様</p>
-        <div class="meta-row"><span>プラン</span><span>月2回プラン</span></div>
-        <div class="meta-row"><span>LINE連携</span><span>連携済み</span></div>
-        <div class="meta-row"><span>サイクル</span><span>2026/06 第2回</span></div>
-        <div class="meta-row"><span>チケットID</span><span>#TCK-10432</span></div>
-        <div class="meta-row"><span>発生元</span><span>CRM自動巡回</span></div>
+        <p class="drawer-head" id="drawerName">Bar Aotetsu 様</p>
+        <div id="drawerMeta"></div>
       </div>
       <div class="drawer-col">
         <p class="drawer-head">会話ログ</p>
-        <p class="log-line"><b>10:00 Bot</b> ｜ 今月の更新タイミングです。サイトで変更・追加したい内容はございますか？</p>
-        <p class="log-line"><b>10:03 顧客</b> ｜ 更新依頼したい</p>
-        <p class="log-line"><b>10:03 Bot</b> ｜ どちらのページのどの部分を変更されたいか、教えてください</p>
-        <p class="log-line"><b>10:05 顧客</b> ｜ トップページの営業時間を変更したいです</p>
-        <p class="log-line"><b>10:05 Bot</b> ｜ 内容を確認のうえ、修正案をご用意します</p>
+        <div id="drawerLog"></div>
       </div>
     </div>
+
+    <div id="toast"></div>
 
     <p class="footnote">※ 本画面はモックアップです。表示データはサンプルです。実装時は既存の更新依頼チケット管理画面に「CRM管理」タブとして追加する想定です。</p>
   </div>
@@ -617,6 +629,115 @@
     renderNode('start');
   }
   resetChat();
+
+  /* ===== ダッシュボード：行クリック・フィルタ・再送 ===== */
+  var custData = {
+    aotetsu: {
+      name:'Bar Aotetsu 様',
+      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第2回'],['チケットID','#TCK-10432'],['発生元','CRM自動巡回']],
+      log:[
+        ['10:00 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
+        ['10:03 顧客','更新依頼したい'],
+        ['10:03 Bot','どちらのページのどの部分を変更されたいか、教えてください'],
+        ['10:05 顧客','トップページの営業時間を変更したいです'],
+        ['10:05 Bot','内容を確認のうえ、修正案をご用意します']
+      ]
+    },
+    kotobuki: {
+      name:'寿建装 様',
+      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第2回'],['チケットID','―'],['発生元','―']],
+      log:[
+        ['10:00 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
+        ['―','顧客の応答を待っています（応答待ち）']
+      ]
+    },
+    ethan: {
+      name:'ethan nail 様',
+      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第1回'],['チケットID','―'],['発生元','―']],
+      log:[
+        ['09:30 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
+        ['11:12 顧客','今回はおまかせで大丈夫'],
+        ['11:12 Bot','承知しました！またご用件があれば、いつでもメッセージをお送りください'],
+        ['―','ステータス：利用なし で確定']
+      ]
+    },
+    harb: {
+      name:'harb la nature 様',
+      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第1回'],['チケットID','―'],['発生元','―']],
+      log:[
+        ['14:00 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
+        ['15:48 顧客','来月に回したい'],
+        ['15:48 Bot','承知しました。今回の更新権利は来月のサイクルに繰り越しいたします。'],
+        ['―','ステータス：来月へ繰越 で確定（※繰越運用ルールは要確定）']
+      ]
+    },
+    repos: {
+      name:'repos_lien 様',
+      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第1回'],['チケットID','―'],['発生元','―']],
+      log:[
+        ['6/13 10:00 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
+        ['―','3日間無応答'],
+        ['6/16 10:00 Bot','（リマインド）今月の更新タイミングです。変更・追加したい内容はございますか？'],
+        ['―','再送後の応答を待っています']
+      ]
+    },
+    terawaki: {
+      name:'寺脇学習塾 様',
+      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第2回'],['チケットID','―'],['発生元','―']],
+      log:[
+        ['第1サイクル','伺い＋リマインドともに無応答'],
+        ['第2サイクル','伺い＋リマインドともに無応答'],
+        ['―','2サイクル連続無応答 → 要フォロー通知を社内CSへ発行']
+      ]
+    }
+  };
+
+  function selectRow(id){
+    var rows = document.querySelectorAll('#panel-dash tbody tr');
+    rows.forEach(function(r){ r.classList.toggle('selected', r.getAttribute('data-cust')===id); });
+    var d = custData[id];
+    if(!d) return;
+    document.getElementById('drawerName').textContent = d.name;
+    document.getElementById('drawerMeta').innerHTML = d.meta.map(function(m){
+      return '<div class="meta-row"><span>'+m[0]+'</span><span>'+m[1]+'</span></div>';
+    }).join('');
+    document.getElementById('drawerLog').innerHTML = d.log.map(function(l){
+      return '<p class="log-line"><b>'+l[0]+'</b> ｜ '+l[1]+'</p>';
+    }).join('');
+  }
+
+  function applyFilter(chip){
+    document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
+    chip.classList.add('active');
+    var f = chip.getAttribute('data-filter');
+    var rows = document.querySelectorAll('#panel-dash tbody tr');
+    var shown = 0;
+    rows.forEach(function(r){
+      var match = (f==='all') || (r.getAttribute('data-status')===f);
+      r.style.display = match ? '' : 'none';
+      if(match) shown++;
+    });
+    var cnt = document.getElementById('filterCount');
+    cnt.textContent = (f==='all') ? (rows.length+'件') : (shown+'件 / '+rows.length+'件');
+  }
+
+  function resendSelected(){
+    var sel = document.querySelector('#panel-dash tbody tr.selected');
+    var name = sel ? sel.querySelector('.cust-name').textContent : '対象顧客';
+    showToast('「'+name+'」に伺いメッセージを再送しました（モック）');
+  }
+
+  var toastTimer = null;
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2400);
+  }
+
+  selectRow('aotetsu');
+  applyFilter(document.querySelector('.filter-chip[data-filter="all"]'));
 </script>
 </body>
 </html>
