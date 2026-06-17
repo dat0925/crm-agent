@@ -58,14 +58,14 @@
   p.page-desc{font-size:13px;color:var(--muted);margin:0 0 22px;}
 
   /* ===== SCREEN 1: LINE flow ===== */
-  .flow-grid{display:grid;grid-template-columns:300px 1fr;gap:40px;align-items:start;}
+  .flow-stage{display:flex;flex-direction:column;align-items:center;}
 
   .phone{
-    width:300px;border-radius:34px;background:#0c0c0c;padding:10px;
-    box-shadow:0 18px 40px rgba(20,40,80,.18);
+    width:330px;border-radius:38px;background:#0c0c0c;padding:11px;
+    box-shadow:0 22px 48px rgba(20,40,80,.20);
   }
   .phone-screen{
-    background:#EDEDED;border-radius:24px;overflow:hidden;height:560px;
+    background:#EDEDED;border-radius:26px;overflow:hidden;height:620px;
     display:flex;flex-direction:column;
   }
   .line-header{
@@ -119,7 +119,61 @@
     border-radius:10px;padding:8px;font-size:11.5px;font-weight:700;cursor:pointer;margin-top:2px;
   }
   .restart-btn:hover{background:#F5F7FA;}
-  .demo-hint{font-size:10.5px;color:var(--muted);text-align:center;margin:6px 0 0;}
+  .demo-hint{font-size:10.5px;color:var(--muted);text-align:center;margin:10px 0 0;max-width:330px;line-height:1.6;}
+
+  /* message column wrapper (bubble + tooltip) */
+  .bubble-col{max-width:84%;display:flex;flex-direction:column;gap:4px;}
+  .msg-row.user .bubble-col{align-items:flex-end;margin-left:auto;}
+  .bubble-col .bubble{max-width:100%;}
+
+  /* rich data card (flex-message風) */
+  .rich-card{
+    background:#fff;border:1px solid #E1E1E1;border-radius:14px;
+    border-bottom-left-radius:4px;padding:12px;width:100%;
+  }
+  .rc-title{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:9px;letter-spacing:.02em;}
+  .rc-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .rc-metric{background:var(--bg);border-radius:9px;padding:8px 9px;}
+  .rc-label{font-size:9.5px;color:var(--muted);}
+  .rc-value{font-size:16px;font-weight:700;color:var(--text);line-height:1.25;}
+  .rc-delta{font-size:9.5px;font-weight:700;}
+  .rc-delta.up{color:var(--green);}
+  .rc-delta.down{color:var(--red);}
+  .rc-rank{margin-top:9px;font-size:10.5px;font-weight:700;color:var(--brand-blue);
+    background:#EAF1FC;border-radius:8px;padding:7px 9px;}
+
+  /* tooltip (仕様メモ) */
+  .tipwrap{align-self:flex-start;}
+  .info-btn{
+    display:inline-flex;align-items:center;gap:3px;border:1px dashed var(--line);
+    background:#fff;color:var(--muted);border-radius:999px;font-size:9.5px;font-weight:700;
+    padding:2px 9px;cursor:pointer;transition:.12s;font-family:inherit;
+  }
+  .info-btn:hover{border-color:var(--brand-blue);color:var(--brand-blue);}
+  .info-btn.active{border-style:solid;border-color:var(--brand-blue);color:#fff;background:var(--brand-blue);}
+  .tip-pop{
+    display:none;margin-top:5px;background:var(--navy);color:#fff;font-size:10.5px;
+    line-height:1.55;border-radius:9px;padding:9px 11px;max-width:240px;
+  }
+  .tip-pop.open{display:block;animation:tipIn .18s ease;}
+  @keyframes tipIn{from{opacity:0;transform:translateY(-3px);}to{opacity:1;transform:none;}}
+
+  /* proposal action cards */
+  .proposal{
+    display:block;width:100%;text-align:left;border:1px solid var(--brand-blue);
+    background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:7px;cursor:pointer;
+    transition:.15s;font-family:inherit;
+  }
+  .proposal:hover{background:#F4F8FE;}
+  .proposal:active{transform:translateY(1px);}
+  .prop-title{font-size:12px;font-weight:700;color:var(--navy);}
+  .prop-why{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.5;}
+  .prop-impact{font-size:10.5px;font-weight:700;color:var(--green);margin-top:5px;}
+  .prop-cta{font-size:10.5px;font-weight:700;color:var(--brand-blue);margin-top:6px;}
+
+  /* concept tooltip near title */
+  .concept-info{position:relative;display:inline-block;margin-left:8px;vertical-align:middle;}
+  .concept-info .tip-pop{position:absolute;left:0;top:24px;z-index:20;max-width:280px;}
 
   .annotations{display:flex;flex-direction:column;gap:14px;}
   .anno{
@@ -265,15 +319,15 @@
 
   <!-- ============ SCREEN 1 ============ -->
   <div class="panel active" id="panel-flow">
-    <h1 class="page-title">顧客が実際に受け取る会話の流れ</h1>
-    <p class="page-desc">月2回プランの巡回サイクルごとに、AIが自動で伺いメッセージを送信。回答に応じて既存の更新依頼フローへそのまま引き継ぐ。</p>
+    <h1 class="page-title">クライアントが受け取る、データドリブンなマーケ提案<span class="concept-info"><button class="info-btn" type="button" onclick="toggleConcept(this)">ⓘ このモックについて</button><div class="tip-pop">月2回プラン標準搭載。受動的な「更新しませんか？」をやめ、GA4・自社予約システム・Googleビジネスプロフィール（MEO／検索順位）の連携データから、AIが毎サイクル“今やるべき施策”を先回りで提案するアドバイザー型エージェント。</div></span></h1>
+    <p class="page-desc">気になる施策はその場でタップ → 既存の更新依頼フローへハンドオフ。各吹き出しの「ⓘ 仕様メモ」で、裏側（データ連携・分岐・ハンドオフ）が確認できます。</p>
 
-    <div class="flow-grid">
+    <div class="flow-stage">
       <div class="phone">
         <div class="phone-screen">
           <div class="line-header">
             <div class="line-avatar"></div>
-            サイトマイスター サポート
+            サイトマイスター ｜ マーケAI担当
           </div>
           <div class="chat-body" id="chatBody">
             <div class="timestamp">6月16日（火）10:00</div>
@@ -281,42 +335,7 @@
             <div id="chatActions"></div>
           </div>
         </div>
-        <p class="demo-hint">↑ボタンを押すと会話が進みます（実際の分岐デモ）</p>
-      </div>
-
-      <div class="annotations">
-        <div class="anno">
-          <div class="anno-num">1</div>
-          <div>
-            <p class="anno-title">巡回トリガー（自動・日次）</p>
-            <p class="anno-body">契約開始日を起点に約15日ごと（月2回プラン＝月内2サイクル）で、対象顧客を日次バッチが抽出し自動送信する。当該サイクルで既に依頼済みの顧客はスキップ。</p>
-            <span class="anno-tag system">crm-checkin-scheduler</span>
-          </div>
-        </div>
-        <div class="anno">
-          <div class="anno-num">2</div>
-          <div>
-            <p class="anno-title">伺いメッセージ ＋ Quick Reply</p>
-            <p class="anno-body">「更新依頼したい／今回はおまかせで大丈夫／来月に回したい」の3択。自然言語解析を使わずpostbackで判定するため実装コストが低い。</p>
-            <span class="anno-tag branch">3分岐</span>
-          </div>
-        </div>
-        <div class="anno">
-          <div class="anno-num">3</div>
-          <div>
-            <p class="anno-title">既存フローへハンドオフ</p>
-            <p class="anno-body">「更新依頼したい」が選ばれた時点で、既存LINE更新依頼エージェントのヒアリングフローへそのまま遷移。新規開発はこのハンドオフ部分のみで、ヒアリング〜修正〜公開のコア処理は再利用する。</p>
-            <span class="anno-tag handoff">ticket作成・source=crm_checkin</span>
-          </div>
-        </div>
-        <div class="anno">
-          <div class="anno-num">4</div>
-          <div>
-            <p class="anno-title">未応答時のフォロー</p>
-            <p class="anno-body">3日間無応答の場合は1回だけリマインドを送信。それでも応答がない場合は「未応答」としてクローズし、社内CSへ要フォロー通知を発行する（完全自動ではなく人とAIの併用設計）。</p>
-            <span class="anno-tag system">crm-checkin-reminder</span>
-          </div>
-        </div>
+        <p class="demo-hint">ボタンを押すと会話が進みます（実際の分岐デモ）。各吹き出しの「ⓘ 仕様メモ」で裏側の仕様を表示。</p>
       </div>
     </div>
   </div>
@@ -459,71 +478,189 @@
   }catch(e){}
 
   /* ===== 会話フロー デモエンジン ===== */
+  var SNAPSHOT = {
+    title:'2026年6月 マーケサマリー（自動連携）',
+    metrics:[
+      {label:'サイト訪問', value:'1,240', delta:'+18%', up:true},
+      {label:'Googleマップ表示', value:'3,580', delta:'+24%', up:true},
+      {label:'予約（システム経由）', value:'42件', delta:'+12%', up:true},
+      {label:'クチコミ', value:'★4.2', delta:'新着3件', up:true}
+    ],
+    rank:'📈 「居酒屋 △△駅」検索順位　8位 → 5位'
+  };
+  var REPORT = {
+    title:'内訳レポート',
+    metrics:[
+      {label:'Google検索 流入', value:'62%', delta:'主要', up:true},
+      {label:'Googleマップ 流入', value:'23%', delta:'+6pt', up:true},
+      {label:'金曜の予約比率', value:'38%', delta:'集中', up:false},
+      {label:'火・水の予約', value:'手薄', delta:'要対策', up:false}
+    ],
+    rank:'🔎 伸びている検索語：「△△駅 コース 居酒屋」「△△ 個室 飲み放題」'
+  };
+
+  var TIP = {
+    concept:'月2回プラン標準搭載。受動的な更新待ちをやめ、各システムのデータから先回りで提案する能動型エージェント。',
+    data:'GA4・自社予約システム・Googleビジネスプロフィールから自動でデータ連携。毎サイクル最新の数値でレポートを生成する。',
+    insight:'単なる更新案内ではなく、アクセス傾向 × 予約状況 × MEOから「今やるべき施策」をAIが抽出して提示する。',
+    handoff:'施策を選ぶと既存の更新依頼フローへハンドオフ。ticketに source=crm_checkin と施策IDを記録し、効果測定で紐付け可能にする。コア処理（ヒアリング〜修正〜公開）は既存を再利用。',
+    reminder:'crm-checkin-reminder。3日無応答で1回だけ再送。送信は1サイクル最大2通まででスパム化を防ぐ。',
+    escalate:'2サイクル連続無応答は「エンゲージメント低下顧客」として管理画面でハイライトし、人手CS／営業が介入する併用設計。'
+  };
+
   var flow = {
     start: {
-      bot: ['いつもサイトマイスターをご利用いただきありがとうございます😊\n今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
+      seq: [
+        {bot:'Bar Aotetsu 様、こんにちは😊\n今月のWEBマーケティング状況をまとめました📊', tip:TIP.concept},
+        {card:SNAPSHOT, tip:TIP.data},
+        {bot:'特に注目したいのが「コース料理」ページです。検索からの流入が前月比 +42% と伸びていますが、掲載中のコース内容は3か月前のまま。来店意欲が高まっている今が、更新の好機です。', tip:TIP.insight}
+      ],
       actions: [
-        {type:'quick', label:'更新依頼したい', next:'request_1'},
-        {type:'quick', label:'今回はおまかせで大丈夫', next:'skip_1'},
-        {type:'quick', label:'来月に回したい', next:'carry_1'},
-        {type:'demo', label:'3日間応答しない', next:'remind_1'}
+        {type:'quick', label:'おすすめ施策を見る', next:'proposals'},
+        {type:'quick', label:'レポートを詳しく', next:'report'},
+        {type:'quick', label:'今月はこのままでOK', next:'skip'},
+        {type:'demo', label:'3日間応答しない', next:'remind'}
       ]
     },
-    request_1: {
-      user: ['更新依頼したい'],
-      bot: ['承知しました！どちらのページのどの部分を変更されたいか、教えてください。（写真の送付もOKです）'],
-      actions: [{type:'freetext', placeholder:'例：トップページの営業時間を変更したいです', next:'request_2'}]
-    },
-    request_2: {
-      bot: ['ありがとうございます。内容を確認のうえ、修正案をご用意します。完成しましたら確認用リンクをお送りします📩'],
-      system: ['チケット #TCK-10432 を作成（発生元：CRM自動巡回）'],
-      actions: [{type:'restart'}]
-    },
-    skip_1: {
-      user: ['今回はおまかせで大丈夫'],
-      bot: ['承知しました！またご用件があれば、いつでもメッセージをお送りください😊'],
-      system: ['ステータス：利用なし で確定'],
-      actions: [{type:'restart'}]
-    },
-    carry_1: {
-      user: ['来月に回したい'],
-      bot: ['承知しました。今回の更新権利は来月のサイクルに繰り越しいたします。'],
-      system: ['ステータス：来月へ繰越 で確定（※繰越運用ルールは要確定）'],
-      actions: [{type:'restart'}]
-    },
-    remind_1: {
-      system: ['3日間無応答 → リマインドを1回だけ送信'],
-      bot: ['（リマインド）今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
+    proposals: {
+      seq: [
+        {bot:'データを踏まえた今月の優先施策はこちらです。気になるものを選ぶと、そのまま更新を依頼できます👇', tip:TIP.handoff}
+      ],
       actions: [
-        {type:'quick', label:'更新依頼したい', next:'request_1'},
-        {type:'quick', label:'今回はおまかせで大丈夫', next:'skip_1'},
-        {type:'demo', label:'それでも応答しない', next:'escalate_1'}
+        {type:'proposal', title:'① コースメニューを最新化', why:'流入+42%のページが古いまま。意欲が高い今、取りこぼしを防ぐ', impact:'予約CVRの改善が見込める', next:'handoff'},
+        {type:'proposal', title:'② GBPに料理写真を5枚追加', why:'マップ表示の主因は写真閲覧。露出をさらに伸ばす', impact:'マップ表示回数↑（MEO強化）', next:'handoff'},
+        {type:'proposal', title:'③ 平日限定クーポンをトップ掲出', why:'火・水の予約が手薄。稼働を平準化する', impact:'平日予約の底上げ', next:'handoff'},
+        {type:'freetext', placeholder:'例：夏の季節メニューを相談したい', next:'consult'}
       ]
     },
-    escalate_1: {
-      system: ['さらに無応答 → ステータス：未応答／社内CSへ「要フォロー」通知を発行'],
+    report: {
+      seq: [
+        {bot:'今月の主要データの内訳です。', },
+        {card:REPORT},
+        {bot:'流入はGoogle検索が中心で、マップ経由も増加中。予約は金曜に集中し、火・水が手薄でした。この傾向から、上の優先施策を組み立てています。', tip:TIP.insight}
+      ],
+      actions: [
+        {type:'quick', label:'おすすめ施策を見る', next:'proposals'},
+        {type:'quick', label:'今月はこのままでOK', next:'skip'}
+      ]
+    },
+    consult: {
+      seq: [
+        {bot:'いいですね。検索が伸びている「コース料理」ページに夏限定コースを追加し、GBPの投稿でも告知するのが効果的です。写真とセットで出すと、マップ経由の予約にもつながりやすいです。この内容で進めますか？', tip:TIP.insight}
+      ],
+      actions: [
+        {type:'quick', label:'この内容で依頼する', next:'handoff'},
+        {type:'quick', label:'やめておく', next:'skip'}
+      ]
+    },
+    handoff: {
+      seq: [
+        {bot:'承知しました！担当が内容を確認し、修正案をご用意します。完成しましたら確認用リンクをLINEでお送りします📩'},
+        {system:'更新依頼チケット #TCK-10432 を作成（source=crm_checkin ／ 施策ID紐付け）', tip:TIP.handoff}
+      ],
+      actions: [{type:'restart'}]
+    },
+    skip: {
+      seq: [
+        {bot:'承知しました！また次回のサイクルで、最新のマーケレポートをお届けします😊'},
+        {system:'ステータス：今回見送り で確定'}
+      ],
+      actions: [{type:'restart'}]
+    },
+    remind: {
+      seq: [
+        {system:'3日間無応答 → リマインドを1回だけ送信', tip:TIP.reminder},
+        {bot:'（リマインド）先日お送りした今月のマーケレポート、ご覧いただけましたか？「コース料理」ページの更新は、今が好機です🙌'}
+      ],
+      actions: [
+        {type:'quick', label:'おすすめ施策を見る', next:'proposals'},
+        {type:'quick', label:'今月はこのままでOK', next:'skip'},
+        {type:'demo', label:'それでも応答しない', next:'escalate'}
+      ]
+    },
+    escalate: {
+      seq: [
+        {system:'さらに無応答 → ステータス：未応答／社内CSへ「要フォロー」通知を発行', tip:TIP.escalate}
+      ],
       actions: [{type:'restart'}]
     }
   };
 
   var chatBusy = false;
 
-  function appendBubble(sender, text){
+  function makeTip(text){
+    var w = document.createElement('div');
+    w.className = 'tipwrap';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'info-btn';
+    b.textContent = 'ⓘ 仕様メモ';
+    var p = document.createElement('div');
+    p.className = 'tip-pop';
+    p.textContent = text;
+    b.onclick = function(e){
+      e.stopPropagation();
+      var open = p.classList.toggle('open');
+      b.classList.toggle('active', open);
+      scrollChat();
+    };
+    w.appendChild(b);
+    w.appendChild(p);
+    return w;
+  }
+  function appendBubble(sender, text, tip){
     var row = document.createElement('div');
     row.className = 'msg-row ' + sender;
+    var col = document.createElement('div');
+    col.className = 'bubble-col';
     var bub = document.createElement('div');
     bub.className = 'bubble ' + sender;
     bub.innerHTML = text.replace(/\n/g,'<br>');
-    row.appendChild(bub);
+    col.appendChild(bub);
+    if(tip && sender === 'bot') col.appendChild(makeTip(tip));
+    row.appendChild(col);
     document.getElementById('chatMessages').appendChild(row);
     scrollChat();
   }
-  function appendSystem(text){
+  function appendCard(card, tip){
+    var row = document.createElement('div');
+    row.className = 'msg-row bot';
+    var col = document.createElement('div');
+    col.className = 'bubble-col';
+    var c = document.createElement('div');
+    c.className = 'rich-card';
+    var html = '<div class="rc-title">' + card.title + '</div><div class="rc-metrics">';
+    card.metrics.forEach(function(m){
+      html += '<div class="rc-metric"><div class="rc-label">' + m.label + '</div>' +
+              '<div class="rc-value">' + m.value + '</div>' +
+              '<div class="rc-delta ' + (m.up ? 'up' : 'down') + '">' + (m.up ? '▲' : '▼') + ' ' + m.delta + '</div></div>';
+    });
+    html += '</div>';
+    if(card.rank) html += '<div class="rc-rank">' + card.rank + '</div>';
+    c.innerHTML = html;
+    col.appendChild(c);
+    if(tip) col.appendChild(makeTip(tip));
+    row.appendChild(col);
+    document.getElementById('chatMessages').appendChild(row);
+    scrollChat();
+  }
+  function appendSystem(text, tip){
     var div = document.createElement('div');
     div.className = 'system-note';
     div.textContent = text;
     document.getElementById('chatMessages').appendChild(div);
+    if(tip){
+      var tw = makeTip(tip);
+      tw.style.textAlign = 'center';
+      tw.style.margin = '2px auto';
+      document.getElementById('chatMessages').appendChild(tw);
+    }
     scrollChat();
+  }
+  function toggleConcept(btn){
+    var p = btn.nextElementSibling;
+    var open = p.classList.toggle('open');
+    btn.classList.toggle('active', open);
   }
   function showTyping(){
     var row = document.createElement('div');
@@ -548,25 +685,23 @@
     document.getElementById('chatActions').innerHTML = '';
     chatBusy = true;
     var seq = Promise.resolve();
-
-    if(node.user){
-      node.user.forEach(function(t){
-        seq = seq.then(function(){ appendBubble('user', t); return wait(280); });
-      });
-    }
-    if(node.bot){
-      node.bot.forEach(function(t){
+    (node.seq || []).forEach(function(step){
+      if(step.user){
+        seq = seq.then(function(){ appendBubble('user', step.user); return wait(260); });
+      } else if(step.bot){
         seq = seq.then(function(){
           showTyping();
-          return wait(700).then(function(){ hideTyping(); appendBubble('bot', t); });
+          return wait(760).then(function(){ hideTyping(); appendBubble('bot', step.bot, step.tip); });
         });
-      });
-    }
-    if(node.system){
-      node.system.forEach(function(t){
-        seq = seq.then(function(){ appendSystem(t); return wait(150); });
-      });
-    }
+      } else if(step.card){
+        seq = seq.then(function(){
+          showTyping();
+          return wait(780).then(function(){ hideTyping(); appendCard(step.card, step.tip); });
+        });
+      } else if(step.system){
+        seq = seq.then(function(){ appendSystem(step.system, step.tip); return wait(180); });
+      }
+    });
     seq.then(function(){ chatBusy = false; renderActions(node.actions); });
   }
 
@@ -584,7 +719,11 @@
           var pill = document.createElement('button');
           pill.className = 'qr-pill' + (a.type==='demo' ? ' demo' : '');
           pill.textContent = (a.type==='demo' ? '🔧 [デモ] ' : '') + a.label;
-          pill.onclick = function(next){ return function(){ if(!chatBusy) renderNode(next); }; }(a.next);
+          pill.onclick = (function(a){ return function(){
+            if(chatBusy) return;
+            if(a.type==='quick') appendBubble('user', a.label);
+            renderNode(a.next);
+          }; })(a);
           wrap.appendChild(pill);
         }
       });
@@ -592,6 +731,21 @@
     }
 
     actions.forEach(function(a){
+      if(a.type==='proposal'){
+        var pb = document.createElement('button');
+        pb.type = 'button';
+        pb.className = 'proposal';
+        pb.innerHTML = '<div class="prop-title">' + a.title + '</div>' +
+                       '<div class="prop-why">' + a.why + '</div>' +
+                       '<div class="prop-impact">▶ ' + a.impact + '</div>' +
+                       '<div class="prop-cta">この施策で更新を依頼 →</div>';
+        pb.onclick = (function(a){ return function(){
+          if(chatBusy) return;
+          appendBubble('user', a.title.replace(/^[①②③④⑤]\s*/, '') + 'で依頼');
+          renderNode(a.next);
+        }; })(a);
+        el.appendChild(pb);
+      }
       if(a.type==='freetext'){
         var fwrap = document.createElement('div');
         fwrap.className = 'free-input';
