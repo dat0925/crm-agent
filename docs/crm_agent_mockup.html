@@ -142,8 +142,23 @@
   .rc-rank{margin-top:9px;font-size:10.5px;font-weight:700;color:var(--brand-blue);
     background:#EAF1FC;border-radius:8px;padding:7px 9px;}
 
-  /* tooltip (仕様メモ) */
-  .tipwrap{align-self:flex-start;}
+  /* tooltip (仕様メモ) — presenter layer, hidden unless 解説モード */
+  .tipwrap{display:none;align-self:flex-start;}
+  body.explain-on .tipwrap{display:block;}
+  .explain-toggle{
+    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);
+    background:#fff;color:var(--muted);border-radius:999px;font-size:11.5px;font-weight:700;
+    padding:7px 14px;cursor:pointer;transition:.15s;font-family:inherit;margin-top:12px;
+  }
+  .explain-toggle:hover{border-color:var(--brand-blue);color:var(--brand-blue);}
+  .explain-toggle.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .explain-toggle .sw{
+    width:30px;height:17px;border-radius:999px;background:#cfd6e0;position:relative;transition:.15s;flex:0 0 auto;
+  }
+  .explain-toggle .sw::after{content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;
+    border-radius:50%;background:#fff;transition:.15s;}
+  .explain-toggle.on .sw{background:var(--brand-sky);}
+  .explain-toggle.on .sw::after{transform:translateX(13px);}
   .info-btn{
     display:inline-flex;align-items:center;gap:3px;border:1px dashed var(--line);
     background:#fff;color:var(--muted);border-radius:999px;font-size:9.5px;font-weight:700;
@@ -201,6 +216,32 @@
   .kpi-value{font-size:24px;font-weight:700;color:var(--navy);}
   .kpi-value span{font-size:13px;color:var(--muted);font-weight:600;margin-left:4px;}
   .kpi-value.alert{color:var(--red);}
+  .kpi-sub{font-size:10.5px;color:var(--green);margin:6px 0 0;font-weight:600;}
+
+  /* connected-data status (連携) */
+  .link-row{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px;}
+  .link-tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;
+    padding:3px 9px;border-radius:999px;}
+  .link-tag.on{background:var(--green-bg);color:var(--green);}
+  .link-tag.off{background:var(--slate-bg);color:var(--muted);}
+  .link-tag .dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+  /* mini metric strip in drawer */
+  .mini-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:2px 0 12px;}
+  .mm-item{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;}
+  .mm-label{font-size:10px;color:var(--muted);}
+  .mm-value{font-size:15px;font-weight:700;color:var(--text);line-height:1.25;}
+  .mm-delta{font-size:10px;font-weight:700;}
+  .mm-delta.up{color:var(--green);}
+  .mm-delta.down{color:var(--red);}
+  .mm-delta.flat{color:var(--muted);}
+
+  /* AI proposal box in drawer */
+  .ai-proposal{background:#F4F8FE;border:1px solid #D5E4F7;border-radius:11px;padding:11px 13px;margin:2px 0 14px;}
+  .ai-prop-title{font-size:12.5px;font-weight:700;color:var(--navy);}
+  .ai-prop-why{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:4px;}
+  .cell-strong{font-weight:700;color:var(--text);}
+  .cell-sub{font-size:11px;color:var(--muted);}
 
   .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
   .filters{display:flex;gap:6px;}
@@ -287,6 +328,64 @@
   }
   .pin-error{font-size:11.5px;color:var(--red);min-height:16px;margin:0 0 6px;}
   body.locked .wrap{display:none;}
+
+  /* ===== mobile optimization ===== */
+  @media (max-width: 720px){
+    .wrap{padding:16px 12px 48px;}
+    .topbar{flex-direction:column;align-items:stretch;gap:12px;margin-bottom:18px;}
+    .brand-text{font-size:14px;}
+    .tabs{width:100%;}
+    .tab{flex:1;text-align:center;padding:9px 6px;}
+
+    h1.page-title{font-size:16px;}
+    p.page-desc{font-size:12.5px;margin-bottom:16px;}
+
+    /* LINE flow phone fits viewport */
+    .phone{width:100%;max-width:340px;padding:9px;border-radius:32px;}
+    .phone-screen{height:74vh;min-height:480px;max-height:640px;border-radius:24px;}
+    .demo-hint{max-width:340px;}
+    .concept-info{display:block;margin-left:0;margin-top:8px;}
+    .concept-info .tip-pop{position:static;max-width:100%;}
+
+    /* KPI 2x2 */
+    .kpi-row{grid-template-columns:1fr 1fr;gap:10px;}
+    .kpi-card{padding:13px 14px;}
+    .kpi-value{font-size:21px;}
+
+    /* toolbar wraps, send button full width */
+    .toolbar{flex-direction:column;align-items:stretch;gap:10px;}
+    .filters{flex-wrap:wrap;}
+    .btn-send{width:100%;padding:11px;}
+
+    /* table → stacked cards */
+    table{border:none;background:transparent;}
+    thead{display:none;}
+    tbody tr{
+      display:block;background:var(--card);border:1px solid var(--line);
+      border-radius:12px;padding:6px 12px;margin-bottom:10px;
+    }
+    tbody tr.selected{background:#F2F7FD;border-color:#BFD8F5;}
+    tbody td{
+      display:flex;justify-content:space-between;align-items:center;gap:14px;
+      padding:8px 0;border-bottom:1px solid var(--line);text-align:right;
+    }
+    tbody tr td:last-child{border-bottom:none;}
+    tbody td::before{
+      content:attr(data-label);color:var(--muted);font-size:11px;font-weight:700;
+      text-align:left;flex:0 0 auto;
+    }
+    tbody td:first-child{text-align:left;}
+    tbody td:first-child::before{display:none;}
+
+    /* drawer stacks */
+    .drawer{flex-direction:column;gap:16px;padding:16px;}
+    .drawer-col[style]{flex:1 1 auto !important;}
+    .mini-metrics{grid-template-columns:1fr 1fr;}
+
+    #toast{left:12px;right:12px;bottom:16px;transform:translateY(16px);
+      text-align:center;}
+    #toast.show{transform:translateY(0);}
+  }
 </style>
 </head>
 <body class="locked">
@@ -320,7 +419,7 @@
   <!-- ============ SCREEN 1 ============ -->
   <div class="panel active" id="panel-flow">
     <h1 class="page-title">クライアントが受け取る、データドリブンなマーケ提案<span class="concept-info"><button class="info-btn" type="button" onclick="toggleConcept(this)">ⓘ このモックについて</button><div class="tip-pop">月2回プラン標準搭載。受動的な「更新しませんか？」をやめ、GA4・自社予約システム・Googleビジネスプロフィール（MEO／検索順位）の連携データから、AIが毎サイクル“今やるべき施策”を先回りで提案するアドバイザー型エージェント。</div></span></h1>
-    <p class="page-desc">気になる施策はその場でタップ → 既存の更新依頼フローへハンドオフ。各吹き出しの「ⓘ 仕様メモ」で、裏側（データ連携・分岐・ハンドオフ）が確認できます。</p>
+    <p class="page-desc">この画面は、クライアントが実際にLINEで受け取る画面そのものです。気になる施策はそのままタップ → 既存の更新依頼フローへハンドオフ。<br>裏側の仕様（データ連携・分岐・ハンドオフ）を確認したいときは、下の「解説モード」をオンにしてください。</p>
 
     <div class="flow-stage">
       <div class="phone">
@@ -335,7 +434,10 @@
             <div id="chatActions"></div>
           </div>
         </div>
-        <p class="demo-hint">ボタンを押すと会話が進みます（実際の分岐デモ）。各吹き出しの「ⓘ 仕様メモ」で裏側の仕様を表示。</p>
+        <button class="explain-toggle" id="explainToggle" type="button" onclick="toggleExplain()">
+          <span class="sw"></span><span id="explainLabel">解説モード：OFF（製品ビュー）</span>
+        </button>
+        <p class="demo-hint">ボタンを押すと会話が進みます。解説モードをオンにすると、各メッセージに仕様メモ（裏側の処理）が表示されます。</p>
       </div>
     </div>
   </div>
@@ -343,24 +445,28 @@
   <!-- ============ SCREEN 2 ============ -->
   <div class="panel" id="panel-dash">
     <h1 class="page-title">CRM管理ダッシュボード（社内運用画面）</h1>
-    <p class="page-desc">巡回状況を顧客単位で一覧管理。要フォロー顧客の検知や、個別の手動再送が行える。</p>
+    <p class="page-desc">各クライアントの連携データ（GA4・予約システム・GBP）と、AIの提案・反応を一覧管理。要フォロー顧客の検知や手動再送も行える。行をタップすると、AIが参照したデータと提案の根拠が見られます。</p>
 
     <div class="kpi-row">
       <div class="kpi-card">
-        <p class="kpi-label">本日の送信対象</p>
-        <div class="kpi-value">42<span>件</span></div>
+        <p class="kpi-label">今月のレポート自動配信</p>
+        <div class="kpi-value">84<span>件</span></div>
+        <p class="kpi-sub">人手CRM 約14時間/月を自動化</p>
       </div>
       <div class="kpi-card">
-        <p class="kpi-label">今月の応答率</p>
+        <p class="kpi-label">レポート応答率</p>
         <div class="kpi-value">78<span>%</span></div>
+        <p class="kpi-sub">前月比 +6pt</p>
       </div>
       <div class="kpi-card">
-        <p class="kpi-label">今月の依頼化率</p>
+        <p class="kpi-label">提案 → 依頼化率</p>
         <div class="kpi-value">46<span>%</span></div>
+        <p class="kpi-sub">前月比 +9pt</p>
       </div>
       <div class="kpi-card">
         <p class="kpi-label">要フォロー件数</p>
         <div class="kpi-value alert">5<span>件</span></div>
+        <p class="kpi-sub" style="color:var(--muted);">2サイクル連続無応答</p>
       </div>
     </div>
 
@@ -369,7 +475,7 @@
         <span class="filter-chip active" data-filter="all" onclick="applyFilter(this)">すべて</span>
         <span class="filter-chip" data-filter="wait" onclick="applyFilter(this)">応答待ち</span>
         <span class="filter-chip" data-filter="done" onclick="applyFilter(this)">依頼化</span>
-        <span class="filter-chip" data-filter="skip" onclick="applyFilter(this)">利用なし</span>
+        <span class="filter-chip" data-filter="skip" onclick="applyFilter(this)">見送り</span>
         <span class="filter-chip" data-filter="followup" onclick="applyFilter(this)">要フォロー</span>
         <span class="filter-count" id="filterCount"></span>
       </div>
@@ -379,61 +485,67 @@
     <table>
       <thead>
         <tr>
-          <th>顧客</th><th>プラン</th><th>直近巡回日</th><th>ステータス</th><th>直近の回答</th>
+          <th>顧客</th><th>ステータス</th><th>AIの提案内容</th><th>主要シグナル（連携データ）</th><th>直近配信</th>
         </tr>
       </thead>
       <tbody>
         <tr class="selected" data-cust="aotetsu" data-status="done" onclick="selectRow('aotetsu')">
           <td><div class="cust-name">Bar Aotetsu 様</div><div class="cust-sub">飲食業</div></td>
-          <td>月2回プラン</td>
-          <td>6/16</td>
-          <td><span class="badge done"><span class="dot"></span>依頼化</span></td>
-          <td>トップページの営業時間を変更したい</td>
+          <td data-label="ステータス"><span class="badge done"><span class="dot"></span>依頼化</span></td>
+          <td data-label="AIの提案">コースメニューを最新化</td>
+          <td data-label="主要シグナル"><span class="cell-strong">コース料理ページ 流入 +42%</span></td>
+          <td data-label="直近配信">6/16</td>
         </tr>
         <tr data-cust="kotobuki" data-status="wait" onclick="selectRow('kotobuki')">
           <td><div class="cust-name">寿建装 様</div><div class="cust-sub">建設業</div></td>
-          <td>月2回プラン</td>
-          <td>6/16</td>
-          <td><span class="badge wait"><span class="dot"></span>応答待ち</span></td>
-          <td>―</td>
+          <td data-label="ステータス"><span class="badge wait"><span class="dot"></span>応答待ち</span></td>
+          <td data-label="AIの提案">施工事例ページに最新3件を追加</td>
+          <td data-label="主要シグナル"><span class="cell-strong">「△△市 外構 施工事例」流入増</span></td>
+          <td data-label="直近配信">6/16</td>
         </tr>
         <tr data-cust="ethan" data-status="skip" onclick="selectRow('ethan')">
           <td><div class="cust-name">ethan nail 様</div><div class="cust-sub">美容業</div></td>
-          <td>月2回プラン</td>
-          <td>6/15</td>
-          <td><span class="badge skip"><span class="dot"></span>利用なし</span></td>
-          <td>今回はおまかせで大丈夫</td>
+          <td data-label="ステータス"><span class="badge skip"><span class="dot"></span>見送り</span></td>
+          <td data-label="AIの提案">GBPに新作ネイル写真を追加</td>
+          <td data-label="主要シグナル"><span class="cell-strong">マップ表示 −8%</span></td>
+          <td data-label="直近配信">6/15</td>
         </tr>
-        <tr data-cust="harb" data-status="carry" onclick="selectRow('harb')">
+        <tr data-cust="harb" data-status="done" onclick="selectRow('harb')">
           <td><div class="cust-name">harb la nature 様</div><div class="cust-sub">美容業</div></td>
-          <td>月2回プラン</td>
-          <td>6/15</td>
-          <td><span class="badge carry"><span class="dot"></span>来月へ繰越</span></td>
-          <td>来月に回したい</td>
+          <td data-label="ステータス"><span class="badge done"><span class="dot"></span>依頼化</span></td>
+          <td data-label="AIの提案">梅雨向けトリートメント特集LP</td>
+          <td data-label="主要シグナル"><span class="cell-strong">「くせ毛 △△」順位 12→7位</span></td>
+          <td data-label="直近配信">6/15</td>
         </tr>
         <tr data-cust="repos" data-status="remind" onclick="selectRow('repos')">
           <td><div class="cust-name">repos_lien 様</div><div class="cust-sub">リラクサロン</div></td>
-          <td>月2回プラン</td>
-          <td>6/13</td>
-          <td><span class="badge remind"><span class="dot"></span>リマインド送信済み</span></td>
-          <td>―（3日間無応答）</td>
+          <td data-label="ステータス"><span class="badge remind"><span class="dot"></span>リマインド送信済み</span></td>
+          <td data-label="AIの提案">平日限定クーポンをトップ掲出</td>
+          <td data-label="主要シグナル"><span class="cell-strong">平日予約 稼働40%</span></td>
+          <td data-label="直近配信">6/13</td>
         </tr>
         <tr data-cust="terawaki" data-status="followup" onclick="selectRow('terawaki')">
           <td><div class="cust-name">寺脇学習塾 様</div><div class="cust-sub">教育・学習支援業</div></td>
-          <td>月2回プラン</td>
-          <td>6/10</td>
-          <td><span class="badge followup"><span class="dot"></span>要フォロー</span></td>
-          <td>2サイクル連続無応答</td>
+          <td data-label="ステータス"><span class="badge followup"><span class="dot"></span>要フォロー</span></td>
+          <td data-label="AIの提案">夏期講習の募集バナー＋GBP投稿</td>
+          <td data-label="主要シグナル"><span class="cell-strong">2サイクル連続無応答</span></td>
+          <td data-label="直近配信">6/10</td>
         </tr>
       </tbody>
     </table>
 
     <div class="drawer">
-      <div class="drawer-col" style="flex:0 0 220px;">
+      <div class="drawer-col" style="flex:0 0 230px;">
         <p class="drawer-head" id="drawerName">Bar Aotetsu 様</p>
         <div id="drawerMeta"></div>
+        <p class="drawer-head" style="margin-top:14px;">連携データ</p>
+        <div class="link-row" id="drawerLinks"></div>
       </div>
       <div class="drawer-col">
+        <p class="drawer-head">今月の主要指標（AIが参照）</p>
+        <div class="mini-metrics" id="drawerMetrics"></div>
+        <p class="drawer-head">AIの提案</p>
+        <div class="ai-proposal" id="drawerProposal"></div>
         <p class="drawer-head">会話ログ</p>
         <div id="drawerLog"></div>
       </div>
@@ -662,6 +774,17 @@
     var open = p.classList.toggle('open');
     btn.classList.toggle('active', open);
   }
+  function toggleExplain(){
+    var on = document.body.classList.toggle('explain-on');
+    var t = document.getElementById('explainToggle');
+    t.classList.toggle('on', on);
+    document.getElementById('explainLabel').textContent =
+      on ? '解説モード：ON（仕様メモを表示）' : '解説モード：OFF（製品ビュー）';
+    if(!on){
+      document.querySelectorAll('.tip-pop.open').forEach(function(p){ p.classList.remove('open'); });
+      document.querySelectorAll('.info-btn.active').forEach(function(b){ b.classList.remove('active'); });
+    }
+  }
   function showTyping(){
     var row = document.createElement('div');
     row.className = 'msg-row bot';
@@ -788,59 +911,107 @@
   var custData = {
     aotetsu: {
       name:'Bar Aotetsu 様',
-      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第2回'],['チケットID','#TCK-10432'],['発生元','CRM自動巡回']],
+      meta:[['プラン','月2回プラン'],['直近サイクル','2026/06 第2回'],['提案ID','PRP-0612'],['チケットID','#TCK-10432']],
+      links:[['GA4',true],['予約システム',true],['GBP',true]],
+      metrics:[
+        {label:'サイト訪問', value:'1,240', delta:'+18%', dir:'up'},
+        {label:'マップ表示', value:'3,580', delta:'+24%', dir:'up'},
+        {label:'予約(システム)', value:'42件', delta:'+12%', dir:'up'},
+        {label:'検索順位', value:'5位', delta:'↑3', dir:'up'}
+      ],
+      proposal:{title:'コースメニューを最新化', why:'「コース料理」ページの流入が前月比 +42%。掲載内容が3か月前のままで、来店意欲が高い今が更新の好機。'},
       log:[
-        ['10:00 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
-        ['10:03 顧客','更新依頼したい'],
-        ['10:03 Bot','どちらのページのどの部分を変更されたいか、教えてください'],
-        ['10:05 顧客','トップページの営業時間を変更したいです'],
-        ['10:05 Bot','内容を確認のうえ、修正案をご用意します']
+        ['10:00 AI','今月のマーケサマリーを配信（訪問+18% / マップ+24% / 予約+12%）'],
+        ['10:00 AI','「コース料理」ページ流入+42%・内容が古い点を提案'],
+        ['10:03 顧客','コースメニューを最新化で依頼'],
+        ['10:03 AI','更新依頼として受付 → チケット #TCK-10432 作成']
       ]
     },
     kotobuki: {
       name:'寿建装 様',
-      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第2回'],['チケットID','―'],['発生元','―']],
+      meta:[['プラン','月2回プラン'],['直近サイクル','2026/06 第2回'],['提案ID','PRP-0613'],['チケットID','―']],
+      links:[['GA4',true],['予約システム',false],['GBP',true]],
+      metrics:[
+        {label:'サイト訪問', value:'880', delta:'+9%', dir:'up'},
+        {label:'マップ表示', value:'2,100', delta:'+15%', dir:'up'},
+        {label:'問い合わせ', value:'6件', delta:'+2', dir:'up'},
+        {label:'検索順位', value:'9位', delta:'↑4', dir:'up'}
+      ],
+      proposal:{title:'施工事例ページに最新3件を追加', why:'「△△市 外構 施工事例」の検索流入が増加。事例の追加で問い合わせ転換を狙う。'},
       log:[
-        ['10:00 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
+        ['09:00 AI','今月のマーケサマリーを配信（訪問+9% / マップ+15%）'],
+        ['09:00 AI','施工事例ページの強化を提案'],
         ['―','顧客の応答を待っています（応答待ち）']
       ]
     },
     ethan: {
       name:'ethan nail 様',
-      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第1回'],['チケットID','―'],['発生元','―']],
+      meta:[['プラン','月2回プラン'],['直近サイクル','2026/06 第1回'],['提案ID','PRP-0611'],['チケットID','―']],
+      links:[['GA4',true],['予約システム',true],['GBP',true]],
+      metrics:[
+        {label:'サイト訪問', value:'540', delta:'−3%', dir:'down'},
+        {label:'マップ表示', value:'1,650', delta:'−8%', dir:'down'},
+        {label:'予約(システム)', value:'28件', delta:'−5%', dir:'down'},
+        {label:'検索順位', value:'6位', delta:'→', dir:'flat'}
+      ],
+      proposal:{title:'GBPに新作ネイル写真を追加', why:'マップ表示が −8%。写真更新が3か月止まっており、露出低下の主因とみられる。'},
       log:[
-        ['09:30 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
-        ['11:12 顧客','今回はおまかせで大丈夫'],
-        ['11:12 Bot','承知しました！またご用件があれば、いつでもメッセージをお送りください'],
-        ['―','ステータス：利用なし で確定']
+        ['09:30 AI','今月のマーケサマリーを配信（マップ −8%）'],
+        ['09:30 AI','GBP写真の更新を提案'],
+        ['11:12 顧客','今月はこのままでOK'],
+        ['―','ステータス：見送り で確定']
       ]
     },
     harb: {
       name:'harb la nature 様',
-      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第1回'],['チケットID','―'],['発生元','―']],
+      meta:[['プラン','月2回プラン'],['直近サイクル','2026/06 第1回'],['提案ID','PRP-0610'],['チケットID','#TCK-10455']],
+      links:[['GA4',true],['予約システム',true],['GBP',true]],
+      metrics:[
+        {label:'サイト訪問', value:'720', delta:'+22%', dir:'up'},
+        {label:'マップ表示', value:'2,300', delta:'+19%', dir:'up'},
+        {label:'予約(システム)', value:'35件', delta:'+14%', dir:'up'},
+        {label:'検索順位', value:'7位', delta:'↑5', dir:'up'}
+      ],
+      proposal:{title:'梅雨向けトリートメント特集LP', why:'「くせ毛 △△」の順位が12→7位で流入増。季節需要を取り込むLPで予約に転換。'},
       log:[
-        ['14:00 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
-        ['15:48 顧客','来月に回したい'],
-        ['15:48 Bot','承知しました。今回の更新権利は来月のサイクルに繰り越しいたします。'],
-        ['―','ステータス：来月へ繰越 で確定（※繰越運用ルールは要確定）']
+        ['14:00 AI','今月のマーケサマリーを配信（訪問+22% / 順位12→7位）'],
+        ['14:00 AI','季節特集LPを提案'],
+        ['15:48 顧客','梅雨向けトリートメント特集LPで依頼'],
+        ['15:48 AI','更新依頼として受付 → チケット #TCK-10455 作成']
       ]
     },
     repos: {
       name:'repos_lien 様',
-      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第1回'],['チケットID','―'],['発生元','―']],
+      meta:[['プラン','月2回プラン'],['直近サイクル','2026/06 第1回'],['提案ID','PRP-0608'],['チケットID','―']],
+      links:[['GA4',true],['予約システム',true],['GBP',true]],
+      metrics:[
+        {label:'サイト訪問', value:'410', delta:'+5%', dir:'up'},
+        {label:'マップ表示', value:'1,200', delta:'+7%', dir:'up'},
+        {label:'平日稼働', value:'40%', delta:'手薄', dir:'flat'},
+        {label:'検索順位', value:'10位', delta:'→', dir:'flat'}
+      ],
+      proposal:{title:'平日限定クーポンをトップ掲出', why:'予約が週末に集中し平日稼働は40%。クーポンで平準化し、売上の底上げを狙う。'},
       log:[
-        ['6/13 10:00 Bot','今月の更新タイミングです。サイトで変更・追加したい内容はございますか？'],
+        ['6/13 10:00 AI','今月のマーケサマリーを配信＋平日クーポンを提案'],
         ['―','3日間無応答'],
-        ['6/16 10:00 Bot','（リマインド）今月の更新タイミングです。変更・追加したい内容はございますか？'],
+        ['6/16 10:00 AI','（リマインド）平日クーポン掲出を再提案'],
         ['―','再送後の応答を待っています']
       ]
     },
     terawaki: {
       name:'寺脇学習塾 様',
-      meta:[['プラン','月2回プラン'],['LINE連携','連携済み'],['サイクル','2026/06 第2回'],['チケットID','―'],['発生元','―']],
+      meta:[['プラン','月2回プラン'],['直近サイクル','2026/06 第2回'],['提案ID','PRP-0605'],['チケットID','―']],
+      links:[['GA4',true],['予約システム',false],['GBP',true]],
+      metrics:[
+        {label:'サイト訪問', value:'300', delta:'−12%', dir:'down'},
+        {label:'マップ表示', value:'900', delta:'−5%', dir:'down'},
+        {label:'資料請求', value:'4件', delta:'−3', dir:'down'},
+        {label:'検索順位', value:'8位', delta:'↓2', dir:'down'}
+      ],
+      proposal:{title:'夏期講習の募集バナー＋GBP投稿', why:'7月は塾検索の最需要期。早期掲出で問い合わせを確保したい。流入も低下傾向で対策が急務。'},
       log:[
-        ['第1サイクル','伺い＋リマインドともに無応答'],
-        ['第2サイクル','伺い＋リマインドともに無応答'],
+        ['第1サイクル','マーケサマリー＋夏期講習提案 → 無応答'],
+        ['第2サイクル','リマインド → 無応答'],
         ['―','2サイクル連続無応答 → 要フォロー通知を社内CSへ発行']
       ]
     }
@@ -855,6 +1026,14 @@
     document.getElementById('drawerMeta').innerHTML = d.meta.map(function(m){
       return '<div class="meta-row"><span>'+m[0]+'</span><span>'+m[1]+'</span></div>';
     }).join('');
+    document.getElementById('drawerLinks').innerHTML = d.links.map(function(l){
+      return '<span class="link-tag '+(l[1]?'on':'off')+'"><span class="dot"></span>'+l[0]+(l[1]?' 連携済み':' 未連携')+'</span>';
+    }).join('');
+    document.getElementById('drawerMetrics').innerHTML = d.metrics.map(function(m){
+      return '<div class="mm-item"><div class="mm-label">'+m.label+'</div><div class="mm-value">'+m.value+'</div><div class="mm-delta '+m.dir+'">'+m.delta+'</div></div>';
+    }).join('');
+    document.getElementById('drawerProposal').innerHTML =
+      '<div class="ai-prop-title">'+d.proposal.title+'</div><div class="ai-prop-why">'+d.proposal.why+'</div>';
     document.getElementById('drawerLog').innerHTML = d.log.map(function(l){
       return '<p class="log-line"><b>'+l[0]+'</b> ｜ '+l[1]+'</p>';
     }).join('');
@@ -878,7 +1057,7 @@
   function resendSelected(){
     var sel = document.querySelector('#panel-dash tbody tr.selected');
     var name = sel ? sel.querySelector('.cust-name').textContent : '対象顧客';
-    showToast('「'+name+'」に伺いメッセージを再送しました（モック）');
+    showToast('「'+name+'」にマーケレポートを再送しました（モック）');
   }
 
   var toastTimer = null;
